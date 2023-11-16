@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     pipe(pipes);
     
     if (argc > 2)
-        args = &argv[2];
+        args = &argv[1];
     int child = fork();
     if (child) {
         close(pipes[1]);
