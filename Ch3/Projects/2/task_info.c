@@ -4,9 +4,12 @@
 #include <linux/module.h>
 #include <linux/proc_fs.h>
 #include <asm/param.h>
+#include <linux/sched.h>
 
 #define BUF_SIZE 128
-#define PROC_NAME "pid"
+#define PROC_NAME "task_info"
+
+static struct task_struct *task;
 
 // Skeleton straight from the book
 // One change - usr_buf has to be a const char
@@ -20,19 +23,57 @@ ssize_t proc_write(struct file *file, const char __user *usr_buf, size_t count,
 
     // Copy from user space to kernel memory
     rv = copy_from_user(k_mem, usr_buf, count);
+    long task_pid = 0;
+    if (kstrtol(k_mem, 10, &task_pid) != 0) {
+        printk(KERN_ERR "Invalid PID input\n");
+        return -1;
+    }
 
-    printk(KERN_INFO "%s\n", k_mem);
+    struct pid *proc = find_vpid(task_pid);
+
+    task = pid_task(proc, PIDTYPE_PID);
 
     // Return kernel memory
     kfree(k_mem);
+    kfree(proc);
 
     return count;
 }
 
-static struct proc_ops ops = {.proc_write = proc_write};
+ssize_t proc_read(struct file *file, char __user *usr_buf, size_t count,
+                  loff_t *pos) {
+    int rv = 0;
+    char buffer[BUF_SIZE];
+    static int completed = 0;
+
+    if (completed) {
+        completed = 0;
+        return 0;
+    }
+
+    if (task == NULL) {
+        printk(KERN_ERR "Invalid task\n");
+        completed = 1;
+        return -1;
+    }
+
+    completed = 1;
+    struct thread_info info = task->thread_info;
+    struct pid *task_pid = task->thread_pid;
+    
+    rv = sprintf(buffer, "command = [%s] pid = [%d] state = [%d]\n", task->comm,
+    task_pid->numbers[0].nr, info.status);
+    // This function returns the number of bytes not copied, but it looks like
+    // you can't return the value on the first go if you want the buffer to be
+    // copied.
+    copy_to_user(usr_buf, buffer, rv);
+    return rv;
+}
+
+static struct proc_ops ops = {.proc_read = proc_read, .proc_write = proc_write};
 
 int proc_init(void) {
-    proc_create(PROC_NAME, 0666, NULL, &ops);
+    proc_create(PROC_NAME, 0777, NULL, &ops);
     return 0;
 }
 
