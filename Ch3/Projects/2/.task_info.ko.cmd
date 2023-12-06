@@ -1,1 +1,0 @@
-savedcmd_/home/alex/OS/Ch3/Projects/2/task_info.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T scripts/module.lds -o /home/alex/OS/Ch3/Projects/2/task_info.ko /home/alex/OS/Ch3/Projects/2/task_info.o /home/alex/OS/Ch3/Projects/2/task_info.mod.o;  true
