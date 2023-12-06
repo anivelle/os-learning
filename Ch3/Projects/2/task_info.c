@@ -61,8 +61,8 @@ ssize_t proc_read(struct file *file, char __user *usr_buf, size_t count,
     struct thread_info info = task->thread_info;
     struct pid *task_pid = task->thread_pid;
     
-    rv = sprintf(buffer, "command = [%s] pid = [%d] state = [%d]\n", task->comm,
-    task_pid->numbers[0].nr, info.status);
+    rv = sprintf(buffer, "command = [%s] pid = [%d] state = [%ld]\n", task->comm,
+    task_pid->numbers[0].nr, info.flags);
     // This function returns the number of bytes not copied, but it looks like
     // you can't return the value on the first go if you want the buffer to be
     // copied.
