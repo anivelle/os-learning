@@ -48,6 +48,7 @@ ssize_t proc_read(struct file *file, char __user *usr_buf, size_t count,
 
     if (completed) {
         completed = 0;
+        kfree(task);
         return 0;
     }
 
@@ -61,6 +62,8 @@ ssize_t proc_read(struct file *file, char __user *usr_buf, size_t count,
     struct thread_info info = task->thread_info;
     struct pid *task_pid = task->thread_pid;
     
+    // I don't know if info.status is correct but info.flags doesn't feel right
+    // either. Maybe a status of 0 is good idk
     rv = sprintf(buffer, "command = [%s] pid = [%d] state = [%ld]\n", task->comm,
     task_pid->numbers[0].nr, info.flags);
     // This function returns the number of bytes not copied, but it looks like
