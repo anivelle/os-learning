@@ -1,0 +1,18 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-ggdb",
+      "-v",
+      "-fopenmp",
+      "-o",
+      "25",
+      "25.c"
+    ],
+    "directory": "/home/alex/OS/Ch4/Problems/25",
+    "file": "/home/alex/OS/Ch4/Problems/25/25.c",
+    "output": "/home/alex/OS/Ch4/Problems/25/25"
+  }
+]
