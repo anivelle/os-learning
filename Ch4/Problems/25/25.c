@@ -17,12 +17,11 @@ int main(int argc, char *argv[]) {
     int i;
     int points_in = 0;
 
-    float x, y;
 // Parallelized point generation
-#pragma omp parallel for schedule(static)
+#pragma omp parallel for reduction(+:points_in)
     for (i = 0; i < NUM_POINTS; i++) {
-        x = (float)random() / RAND_MAX * 2 - 1;
-        y = (float)random() / RAND_MAX * 2 - 1;
+        float x = (float)random() / RAND_MAX * 2 - 1;
+        float y = (float)random() / RAND_MAX * 2 - 1;
         if (sqrt(pow(x, 2) + pow(y, 2)) < 1)
             points_in++;
     }
